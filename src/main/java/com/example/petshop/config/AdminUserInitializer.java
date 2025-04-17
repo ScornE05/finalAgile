@@ -44,14 +44,19 @@ public class AdminUserInitializer implements CommandLineRunner {
                 User adminUser = new User();
                 adminUser.setUsername(adminUsername);
                 adminUser.setEmail(adminEmail);
-                adminUser.setPassword(passwordEncoder.encode(adminPassword));
+                adminUser.setPassword(adminPassword); // Không mã hóa nữa
                 adminUser.setFullName("Admin User");
                 adminUser.setRole("ADMIN");
 
                 User savedUser = userRepository.save(adminUser);
                 System.out.println("Admin user created successfully with ID: " + savedUser.getId() + " and username: " + savedUser.getUsername());
             } else {
-                System.out.println("Admin user already exists, skipping creation.");
+                // Cập nhật mật khẩu admin hiện có
+                userRepository.findByUsername(adminUsername).ifPresent(admin -> {
+                    admin.setPassword(adminPassword); // Không mã hóa
+                    userRepository.save(admin);
+                    System.out.println("Updated admin password to plain text for learning purposes.");
+                });
             }
         } catch (Exception e) {
             System.err.println("Error during admin user initialization: " + e.getMessage());
