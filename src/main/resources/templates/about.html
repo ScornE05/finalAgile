@@ -1,0 +1,102 @@
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Giới thiệu')}">
+    <title>Giới thiệu</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- About Section -->
+<section class="about-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="mb-4 text-center">Giới thiệu về PetShop</h2>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4>Câu chuyện của chúng tôi</h4>
+                        <p>
+                            PetShop được thành lập vào năm 2020 với mục tiêu trở thành điểm đến tin cậy và an toàn cho các bạn
+                            muốn tìm kiếm thú cưng và các sản phẩm chăm sóc thú cưng chất lượng cao.
+                        </p>
+                        <p>
+                            Chúng tôi tin rằng mỗi con vật đều xứng đáng được yêu thương và chăm sóc đúng cách.
+                            Đó là lý do tại sao PetShop luôn đảm bảo rằng tất cả các thú cưng chúng tôi cung cấp
+                            đều được chăm sóc chu đáo và khỏe mạnh trước khi đến tay khách hàng.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4>Sứ mệnh của chúng tôi</h4>
+                        <p>
+                            Sứ mệnh của PetShop là cung cấp dịch vụ và sản phẩm chất lượng cao nhất cho thú cưng của bạn,
+                            đồng thời tạo ra một cộng đồng nơi những người yêu thú cưng có thể chia sẻ kinh nghiệm và tình yêu
+                            dành cho những người bạn bốn chân của mình.
+                        </p>
+                        <p>
+                            Chúng tôi cam kết:
+                        </p>
+                        <ul>
+                            <li>Cung cấp thú cưng khỏe mạnh và được chăm sóc tốt</li>
+                            <li>Cung cấp các sản phẩm chất lượng cao từ các thương hiệu uy tín</li>
+                            <li>Tư vấn chuyên nghiệp về cách chăm sóc thú cưng</li>
+                            <li>Hỗ trợ khách hàng 24/7</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4>Đội ngũ của chúng tôi</h4>
+                        <p>
+                            Đội ngũ PetShop bao gồm những người yêu thú cưng và có kinh nghiệm trong việc chăm sóc động vật.
+                            Chúng tôi có các chuyên gia thú y, huấn luyện viên và tư vấn viên luôn sẵn sàng hỗ trợ bạn
+                            trong việc chọn lựa và chăm sóc thú cưng.
+                        </p>
+
+                        <div class="row mt-4">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <h5>Nguyễn Văn A</h5>
+                                        <p class="text-muted">Người sáng lập</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <h5>Trần Thị B</h5>
+                                        <p class="text-muted">Bác sĩ thú y</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <h5>Lê Văn C</h5>
+                                        <p class="text-muted">Chuyên gia huấn luyện</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
+```

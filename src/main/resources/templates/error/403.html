@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Không có quyền truy cập')}">
+    <title>Không có quyền truy cập</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Error Section -->
+<section class="error-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="display-1">403</h1>
+                        <h2 class="mb-4">Không có quyền truy cập</h2>
+                        <p class="lead">Bạn không có quyền truy cập vào trang này. Vui lòng đăng nhập bằng tài khoản có quyền phù hợp.</p>
+                        <a th:href="@{/login}" class="btn btn-primary mt-3">Đăng nhập</a>
+                        <a th:href="@{/}" class="btn btn-outline-secondary mt-3 ms-2">Quay lại trang chủ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

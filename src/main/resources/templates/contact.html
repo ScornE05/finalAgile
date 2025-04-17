@@ -1,0 +1,99 @@
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Liên hệ')}">
+    <title>Liên hệ</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Contact Section -->
+<section class="contact-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Liên hệ với chúng tôi</h2>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4>Thông tin liên hệ</h4>
+                        <hr>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> 123 Nguyễn Trãi, Thanh Xuân, Hà Nội</p>
+                        <p><i class="fas fa-phone me-2"></i> 0879 637 686</p>
+                        <p><i class="fas fa-envelope me-2"></i> info@petshop.com</p>
+
+                        <h5 class="mt-4">Giờ làm việc</h5>
+                        <p>Thứ Hai - Thứ Sáu: 8:00 - 20:00</p>
+                        <p>Thứ Bảy - Chủ Nhật: 9:00 - 18:00</p>
+
+                        <h5 class="mt-4">Theo dõi chúng tôi</h5>
+                        <div class="social-links">
+                            <a href="#" class="me-2 text-primary"><i class="fab fa-facebook fa-2x"></i></a>
+                            <a href="#" class="me-2 text-danger"><i class="fab fa-instagram fa-2x"></i></a>
+                            <a href="#" class="me-2 text-info"><i class="fab fa-twitter fa-2x"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4>Gửi tin nhắn cho chúng tôi</h4>
+                        <hr>
+                        <form th:action="@{/contact/send}" method="post">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Họ và tên</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Tiêu đề</label>
+                                <input type="text" class="form-control" id="subject" name="subject" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Nội dung</label>
+                                <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Gửi tin nhắn</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Bản đồ</h4>
+                        <hr>
+                        <div class="ratio ratio-16x9">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.9376487781225!2d105.8275!3d20.9950!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135aca5323dd545%3A0x22774662e77bca71!2zMTIzIE5ndXnhu4VuIFRyw6NpLCBUaGFuaCBYdcOibiwgSMOgIE7hu5lpLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1623825247842!5m2!1svi!2s"
+                                    allowfullscreen="" loading="lazy"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
+```

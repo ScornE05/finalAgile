@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Đã xảy ra lỗi')}">
+    <title>Đã xảy ra lỗi</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Error Section -->
+<section class="error-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="mb-4">Đã xảy ra lỗi</h1>
+                        <p class="lead">Rất tiếc, đã xảy ra lỗi khi xử lý yêu cầu của bạn.</p>
+                        <p>Vui lòng thử lại sau hoặc liên hệ với quản trị viên để được hỗ trợ.</p>
+                        <a th:href="@{/}" class="btn btn-primary mt-3">Quay lại trang chủ</a>
+                        <a th:href="@{/contact}" class="btn btn-outline-secondary mt-3 ms-2">Liên hệ hỗ trợ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
