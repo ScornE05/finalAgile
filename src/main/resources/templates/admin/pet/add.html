@@ -1,10 +1,159 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thêm thú cưng mới')}">
+    <title>Thêm thú cưng mới</title>
 </head>
 <body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
 
+<!-- Admin Add Pet Section -->
+<section class="admin-add-pet-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Thêm thú cưng mới</h2>
+            <a th:href="@{/admin/pets}" class="btn btn-outline-primary">Quay lại danh sách</a>
+        </div>
+
+        <!-- Admin navigation -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/products}">Sản phẩm</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/categories}">Danh mục</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" th:href="@{/admin/pets}">Thú cưng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/orders}">Đơn hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/users}">Người dùng</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Pet Form -->
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/admin/pets/add}" method="post" th:object="${pet}" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <!-- Thông tin cơ bản -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Tên thú cưng <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="species" class="form-label">Loài <span class="text-danger">*</span></label>
+                                <select class="form-select" id="species" th:field="*{species}" required>
+                                    <option value="">-- Chọn loài --</option>
+                                    <option value="Chó">Chó</option>
+                                    <option value="Mèo">Mèo</option>
+                                    <option value="Chim">Chim</option>
+                                    <option value="Cá">Cá</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('species')}" th:errors="*{species}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="breed" class="form-label">Giống</label>
+                                <input type="text" class="form-control" id="breed" th:field="*{breed}">
+                                <div class="text-danger" th:if="${#fields.hasErrors('breed')}" th:errors="*{breed}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Mô tả</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="5"></textarea>
+                                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <!-- Thông tin bổ sung -->
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Giá <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="price" th:field="*{price}" min="0" step="1000" required>
+                                    <span class="input-group-text">VNĐ</span>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="age" class="form-label">Tuổi (tháng)</label>
+                                <input type="number" class="form-control" id="age" th:field="*{age}" min="0">
+                                <div class="text-danger" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">Giới tính <span class="text-danger">*</span></label>
+                                <select class="form-select" id="gender" th:field="*{gender}" required>
+                                    <option value="">-- Chọn giới tính --</option>
+                                    <option value="MALE">Đực</option>
+                                    <option value="FEMALE">Cái</option>
+                                </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="color" class="form-label">Màu sắc</label>
+                                <input type="text" class="form-control" id="color" th:field="*{color}">
+                                <div class="text-danger" th:if="${#fields.hasErrors('color')}" th:errors="*{color}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="weight" class="form-label">Cân nặng (kg)</label>
+                                <input type="number" class="form-control" id="weight" th:field="*{weight}" min="0" step="0.1">
+                                <div class="text-danger" th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="imageFile" class="form-label">Hình ảnh</label>
+                                <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
+                                <div class="form-text">Chọn ảnh chính cho thú cưng. Bạn có thể thêm nhiều ảnh khác sau.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Trạng thái</label>
+                                <select class="form-select" id="status" th:field="*{status}">
+                                    <option value="AVAILABLE">Có sẵn</option>
+                                    <option value="RESERVED">Đã đặt</option>
+                                    <option value="SOLD">Đã bán</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="reset" class="btn btn-outline-secondary me-2">Xóa form</button>
+                        <button type="submit" class="btn btn-primary">Lưu thú cưng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

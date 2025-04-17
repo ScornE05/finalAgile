@@ -1,10 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quản lý ảnh sản phẩm')}">
+    <title>Quản lý ảnh sản phẩm</title>
 </head>
 <body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
 
+<!-- Admin Product Images Section -->
+<section class="admin-product-images-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Quản lý ảnh sản phẩm: <span th:text="${product.name}"></span></h2>
+            <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-outline-primary">Quay lại chỉnh sửa</a>
+        </div>
+
+        <!-- Thông báo -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <span th:text="${success}">Thành công</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
+            <span th:text="${error}">Lỗi</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Admin navigation -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" th:href="@{/admin/products}">Sản phẩm</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/categories}">Danh mục</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/pets}">Thú cưng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/orders}">Đơn hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/users}">Người dùng</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Thêm ảnh mới -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Thêm ảnh mới</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/products/images/{productId}/add(productId=${product.id})}" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="imageFile" class="form-label">Chọn ảnh</label>
+                                <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" required>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="isPrimary" name="isPrimary">
+                                <label class="form-check-label" for="isPrimary">Đặt làm ảnh chính</label>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Tải lên</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách ảnh -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Danh sách ảnh</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Thông báo khi không có ảnh -->
+                            <div class="col-12 text-center" th:if="${#lists.isEmpty(product.images)}">
+                                <p>Chưa có ảnh nào cho sản phẩm này.</p>
+                            </div>
+
+                            <!-- Hiển thị các ảnh -->
+                            <div class="col-md-4 mb-3" th:each="image : ${product.images}">
+                                <div class="card">
+                                    <img th:src="${image.imageUrl}" class="card-img-top" alt="Product Image">
+                                    <div class="card-body text-center">
+                                        <span class="badge bg-primary mb-2" th:if="${image.isPrimary}">Ảnh chính</span>
+                                        <div class="d-grid gap-2">
+                                            <a th:if="${!image.isPrimary}"
+                                               th:href="@{/admin/products/images/{productId}/primary/{imageId}(productId=${product.id},imageId=${image.id})}"
+                                               class="btn btn-sm btn-outline-primary">Đặt làm ảnh chính</a>
+                                            <a th:href="@{/admin/products/images/{productId}/delete/{imageId}(productId=${product.id},imageId=${image.id})}"
+                                               class="btn btn-sm btn-outline-danger"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa ảnh này?');">Xóa</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a th:href="@{/admin/products}" class="btn btn-primary">Quay lại danh sách sản phẩm</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

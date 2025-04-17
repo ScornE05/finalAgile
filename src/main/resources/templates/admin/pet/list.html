@@ -1,10 +1,167 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quản lý thú cưng')}">
+    <title>Quản lý thú cưng</title>
 </head>
 <body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
 
+<!-- Admin Pets Section -->
+<section class="admin-pets-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Quản lý thú cưng</h2>
+            <a th:href="@{/admin/pets/add}" class="btn btn-primary">Thêm thú cưng mới</a>
+        </div>
+
+        <!-- Thông báo -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <span th:text="${success}">Thành công</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
+            <span th:text="${error}">Lỗi</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Admin navigation -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/products}">Sản phẩm</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/categories}">Danh mục</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" th:href="@{/admin/pets}">Thú cưng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/orders}">Đơn hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/users}">Người dùng</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pets List -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Hình ảnh</th>
+                            <th scope="col">Tên</th>
+                            <th scope="col">Loài</th>
+                            <th scope="col">Giống</th>
+                            <th scope="col">Giá</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="pet : ${pets}" th:if="${not #lists.isEmpty(pets)}">
+                            <td th:text="${pet.id}">1</td>
+                            <td>
+                                <img th:if="${pet.imageUrl}" th:src="${pet.imageUrl}" width="50" alt="Pet Image">
+                                <img th:unless="${pet.imageUrl}" src="/images/no-image.jpg" width="50" alt="No Image">
+                            </td>
+                            <td th:text="${pet.name}">Tên thú cưng</td>
+                            <td th:text="${pet.species}">Loài</td>
+                            <td th:text="${pet.breed ?: '-'}">Giống</td>
+                            <td th:text="${#numbers.formatDecimal(pet.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</td>
+                            <td>
+                                <span class="badge bg-success" th:if="${pet.status == 'AVAILABLE'}">Có sẵn</span>
+                                <span class="badge bg-warning" th:if="${pet.status == 'RESERVED'}">Đã đặt</span>
+                                <span class="badge bg-danger" th:if="${pet.status == 'SOLD'}">Đã bán</span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a th:href="@{/admin/pets/edit/{id}(id=${pet.id})}" class="btn btn-sm btn-primary" title="Sửa">
+                                        Sửa
+                                    </a>
+                                    <a th:href="@{/admin/pets/images/{id}(id=${pet.id})}" class="btn btn-sm btn-info" title="Quản lý ảnh">
+                                        Ảnh
+                                    </a>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Trạng thái
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" th:href="@{/admin/pets/status/{id}/AVAILABLE(id=${pet.id})}">Có sẵn</a></li>
+                                            <li><a class="dropdown-item" th:href="@{/admin/pets/status/{id}/RESERVED(id=${pet.id})}">Đã đặt</a></li>
+                                            <li><a class="dropdown-item" th:href="@{/admin/pets/status/{id}/SOLD(id=${pet.id})}">Đã bán</a></li>
+                                        </ul>
+                                    </div>
+                                    <a th:href="@{/admin/pets/delete/{id}(id=${pet.id})}" class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Bạn có chắc chắn muốn xóa thú cưng này?');" title="Xóa">
+                                        Xóa
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(pets)}">
+                            <td colspan="8" class="text-center">Không có thú cưng nào.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="row mt-4" th:if="${totalPages > 0}">
+                    <div class="col-12">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/admin/pets(page=0, size=${size}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="First">
+                                        <span aria-hidden="true">&laquo;&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/admin/pets(page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i ? 'active' : ''}">
+                                    <a class="page-link" th:href="@{/admin/pets(page=${i}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir})}" th:text="${i + 1}">1</a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/admin/pets(page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/admin/pets(page=${totalPages - 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="Last">
+                                        <span aria-hidden="true">&raquo;&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

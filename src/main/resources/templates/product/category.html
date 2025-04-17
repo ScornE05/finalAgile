@@ -1,10 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sản phẩm theo danh mục')}">
+    <title>Sản phẩm theo danh mục</title>
 </head>
 <body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
 
+<!-- Product Category Section -->
+<section class="product-category-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Danh mục: <span th:text="${category.name}"></span></h2>
+            <a th:href="@{/products}" class="btn btn-outline-primary">Quay lại tất cả sản phẩm</a>
+        </div>
+
+        <!-- Category Description -->
+        <div class="row mb-4" th:if="${category.description != null && !category.description.isEmpty()}">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <p th:text="${category.description}">Mô tả danh mục</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subcategories if any -->
+        <div class="row mb-4" th:if="${not #lists.isEmpty(category.subcategories)}">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Danh mục con</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            <a th:each="subcat : ${category.subcategories}"
+                               th:href="@{/products/category/{id}(id=${subcat.id})}"
+                               class="btn btn-outline-primary">
+                                <span th:text="${subcat.name}">Tên danh mục con</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products List -->
+        <div class="row">
+            <div class="col-md-3 mb-4" th:each="product : ${products}">
+                <div class="card h-100">
+                    <img th:if="${product.imageUrl}" th:src="${product.imageUrl}" class="card-img-top" alt="Product Image">
+                    <img th:unless="${product.imageUrl}" src="/images/no-image.jpg" class="card-img-top" alt="No Image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}">Tên sản phẩm</h5>
+                        <p class="card-text">
+                            <span th:if="${product.discountPrice}" th:text="${#numbers.formatDecimal(product.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'" class="text-danger">Giá khuyến mãi</span>
+                            <span th:if="${product.discountPrice}" class="text-decoration-line-through text-muted ms-2" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá gốc</span>
+                            <span th:unless="${product.discountPrice}" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                        </p>
+                        <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-primary">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hiển thị thông báo khi không có sản phẩm -->
+            <div class="col-12 text-center" th:if="${#lists.isEmpty(products)}">
+                <p>Không tìm thấy sản phẩm nào trong danh mục này.</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-4" th:if="${totalPages > 0}">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/products/category/{categoryId}(categoryId=${category.id},page=0, size=${size})}" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/products/category/{categoryId}(categoryId=${category.id},page=${currentPage - 1}, size=${size})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/products/category/{categoryId}(categoryId=${category.id},page=${i}, size=${size})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/products/category/{categoryId}(categoryId=${category.id},page=${currentPage + 1}, size=${size})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/products/category/{categoryId}(categoryId=${category.id},page=${totalPages - 1}, size=${size})}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

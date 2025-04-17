@@ -1,10 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thú cưng theo loài')}">
+    <title>Thú cưng theo loài</title>
 </head>
 <body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
 
+<!-- Pet Species Section -->
+<section class="pet-species-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Thú cưng loài: <span th:text="${species}"></span></h2>
+            <a th:href="@{/pets}" class="btn btn-outline-primary">Quay lại tất cả thú cưng</a>
+        </div>
+
+        <!-- Pets List -->
+        <div class="row">
+            <div class="col-md-3 mb-4" th:each="pet : ${pets}">
+                <div class="card h-100">
+                    <img th:if="${pet.imageUrl}" th:src="${pet.imageUrl}" class="card-img-top" alt="Pet Image">
+                    <img th:unless="${pet.imageUrl}" src="/images/no-image.jpg" class="card-img-top" alt="No Image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${pet.name}">Tên thú cưng</h5>
+                        <p class="card-text">
+                            <span th:text="${pet.species}">Loài</span>
+                            <span th:if="${pet.breed}" th:text="' - ' + ${pet.breed}">Giống</span>
+                        </p>
+                        <p class="card-text">
+                            <span th:text="${#numbers.formatDecimal(pet.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-primary">Xem chi tiết</a>
+                            <span class="badge bg-success" th:if="${pet.status == 'AVAILABLE'}">Có sẵn</span>
+                            <span class="badge bg-warning" th:if="${pet.status == 'RESERVED'}">Đã đặt</span>
+                            <span class="badge bg-danger" th:if="${pet.status == 'SOLD'}">Đã bán</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hiển thị thông báo khi không có thú cưng -->
+            <div class="col-12 text-center" th:if="${#lists.isEmpty(pets)}">
+                <p>Không tìm thấy thú cưng loài <span th:text="${species}"></span> nào.</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-4" th:if="${totalPages > 0}">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/pets/species/{species}(species=${species},page=0, size=${size})}" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/pets/species/{species}(species=${species},page=${currentPage - 1}, size=${size})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/pets/species/{species}(species=${species},page=${i}, size=${size})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/pets/species/{species}(species=${species},page=${currentPage + 1}, size=${size})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/pets/species/{species}(species=${species},page=${totalPages - 1}, size=${size})}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

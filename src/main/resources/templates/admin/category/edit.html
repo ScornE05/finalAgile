@@ -1,10 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chỉnh sửa danh mục')}">
+    <title>Chỉnh sửa danh mục</title>
 </head>
 <body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
 
+<!-- Admin Edit Category Section -->
+<section class="admin-edit-category-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Chỉnh sửa danh mục</h2>
+            <a th:href="@{/admin/categories}" class="btn btn-outline-primary">Quay lại danh sách</a>
+        </div>
+
+        <!-- Thông báo -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <span th:text="${success}">Thành công</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
+            <span th:text="${error}">Lỗi</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Admin navigation -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/products}">Sản phẩm</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" th:href="@{/admin/categories}">Danh mục</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/pets}">Thú cưng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/orders}">Đơn hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/users}">Người dùng</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Category Form -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Chỉnh sửa danh mục</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/categories/edit/{id}(id=${category.id})}" method="post" th:object="${category}">
+                            <input type="hidden" th:field="*{id}">
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Mô tả</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="4"></textarea>
+                                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="parentId" class="form-label">Danh mục cha</label>
+                                <select class="form-select" id="parentId" name="parentId">
+                                    <option value="">-- Không có danh mục cha --</option>
+                                    <option th:each="parentCategory : ${parentCategories}"
+                                            th:value="${parentCategory.id}"
+                                            th:text="${parentCategory.name}"
+                                            th:selected="${category.parent != null && category.parent.id == parentCategory.id}">
+                                        Danh mục cha
+                                    </option>
+                                </select>
+                                <div class="form-text">Lưu ý: Không thể chọn chính danh mục này hoặc các danh mục con của nó làm danh mục cha.</div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subcategories List -->
+        <div class="row justify-content-center mt-4" th:if="${not #lists.isEmpty(category.subcategories)}">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Danh mục con</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên danh mục</th>
+                                    <th>Số sản phẩm</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="subcat : ${category.subcategories}">
+                                    <td th:text="${subcat.id}">1</td>
+                                    <td th:text="${subcat.name}">Tên danh mục con</td>
+                                    <td th:text="${subcat.products != null ? subcat.products.size() : 0}">10</td>
+                                    <td>
+                                        <a th:href="@{/admin/categories/edit/{id}(id=${subcat.id})}" class="btn btn-sm btn-primary">Sửa</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>
