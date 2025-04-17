@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Giỏ hàng')}">
+    <title>Giỏ hàng</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Cart Section -->
+<section class="cart-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Giỏ hàng của bạn</h2>
+
+        <!-- Thông báo -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <span th:text="${success}">Thành công</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Giỏ hàng trống -->
+        <div class="text-center py-5" th:if="${#lists.isEmpty(cartItems)}">
+            <h4>Giỏ hàng của bạn đang trống</h4>
+            <p>Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm.</p>
+            <a th:href="@{/products}" class="btn btn-primary mt-3">Tiếp tục mua sắm</a>
+        </div>
+
+        <!-- Giỏ hàng có sản phẩm -->
+        <div th:if="${not #lists.isEmpty(cartItems)}">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Ảnh</th>
+                                <th scope="col">Tên sản phẩm</th>
+                                <th scope="col">Đơn giá</th>
+                                <th scope="col">Số lượng</th>
+                                <th scope="col">Thành tiền</th>
+                                <th scope="col">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item, stat : ${cartItems}">
+                                <th scope="row" th:text="${stat.count}">1</th>
+                                <td>
+                                    <!-- Hiển thị ảnh sản phẩm hoặc thú cưng -->
+                                    <img th:if="${item.product != null && item.product.imageUrl != null}"
+                                         th:src="${item.product.imageUrl}" width="50" alt="Product Image">
+                                    <img th:if="${item.pet != null && item.pet.imageUrl != null}"
+                                         th:src="${item.pet.imageUrl}" width="50" alt="Pet Image">
+                                    <img th:if="${(item.product == null || item.product.imageUrl == null) && (item.pet == null || item.pet.imageUrl == null)}"
+                                         src="/images/no-image.jpg" width="50" alt="No Image">
+                                </td>
+                                <td>
+                                    <!-- Tên sản phẩm hoặc thú cưng -->
+                                    <a th:if="${item.product != null}"
+                                       th:href="@{/products/{id}(id=${item.product.id})}"
+                                       th:text="${item.product.name}">Tên sản phẩm</a>
+                                    <a th:if="${item.pet != null}"
+                                       th:href="@{/pets/{id}(id=${item.pet.id})}"
+                                       th:text="${item.pet.name}">Tên thú cưng</a>
+                                </td>
+                                <td>
+                                    <!-- Đơn giá -->
+                                    <span th:if="${item.product != null && item.product.discountPrice != null}"
+                                          th:text="${#numbers.formatDecimal(item.product.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                                100,000 VNĐ
+                                            </span>
+                                    <span th:if="${item.product != null && item.product.discountPrice == null}"
+                                          th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                                100,000 VNĐ
+                                            </span>
+                                    <span th:if="${item.pet != null}"
+                                          th:text="${#numbers.formatDecimal(item.pet.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                                1,000,000 VNĐ
+                                            </span>
+                                </td>
+                                <td>
+                                    <!-- Form cập nhật số lượng -->
+                                    <form th:action="@{/cart/update/{id}(id=${item.id})}" method="post">
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" class="form-control" name="quantity"
+                                                   th:value="${item.quantity}" min="1" max="100">
+                                            <button class="btn btn-outline-secondary" type="submit">
+                                                Cập nhật
+                                            </button>
+                                        </div>
+                                    </form>
+                                </td>
+                                <td>
+                                    <!-- Thành tiền -->
+                                    <span th:if="${item.product != null && item.product.discountPrice != null}"
+                                          th:text="${#numbers.formatDecimal(item.product.discountPrice * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                                100,000 VNĐ
+                                            </span>
+                                    <span th:if="${item.product != null && item.product.discountPrice == null}"
+                                          th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                                100,000 VNĐ
+                                            </span>
+                                    <span th:if="${item.pet != null}"
+                                          th:text="${#numbers.formatDecimal(item.pet.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                                1,000,000 VNĐ
+                                            </span>
+                                </td>
+                                <td>
+                                    <!-- Nút xóa -->
+                                    <a th:href="@{/cart/remove/{id}(id=${item.id})}" class="btn btn-sm btn-danger">
+                                        Xóa
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th colspan="5" class="text-end">Tổng cộng:</th>
+                                <th th:text="${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</th>
+                                <td></td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Các nút thao tác -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <a th:href="@{/products}" class="btn btn-outline-primary">Tiếp tục mua sắm</a>
+                    <a th:href="@{/cart/clear}" class="btn btn-outline-danger ms-2">Xóa giỏ hàng</a>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a th:href="@{/orders/checkout}" class="btn btn-success">Thanh toán</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

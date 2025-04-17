@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Chi tiết sản phẩm')}">
+    <title>Chi tiết sản phẩm</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Product Detail Section -->
+<section class="product-detail-section py-5">
+    <div class="container">
+        <!-- Thông báo -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <span th:text="${success}">Thành công</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <!-- Ảnh sản phẩm -->
+                    <div class="col-md-5">
+                        <img th:if="${product.imageUrl}" th:src="${product.imageUrl}" class="img-fluid" alt="Product Image">
+                        <img th:unless="${product.imageUrl}" src="/images/no-image.jpg" class="img-fluid" alt="No Image">
+
+                        <!-- Ảnh phụ -->
+                        <div class="row mt-3" th:if="${not #lists.isEmpty(product.images)}">
+                            <div class="col-3 mb-3" th:each="image : ${product.images}">
+                                <img th:src="${image.imageUrl}" class="img-thumbnail" alt="Product Image">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin sản phẩm -->
+                    <div class="col-md-7">
+                        <h2 th:text="${product.name}">Tên sản phẩm</h2>
+                        <p>
+                            <span class="badge bg-primary" th:text="${product.category.name}">Danh mục</span>
+                            <span class="badge bg-success" th:if="${product.status == 'ACTIVE'}">Còn hàng</span>
+                            <span class="badge bg-danger" th:if="${product.status != 'ACTIVE'}">Hết hàng</span>
+                        </p>
+
+                        <div class="mb-3">
+                            <h4>
+                                <span th:if="${product.discountPrice}" th:text="${#numbers.formatDecimal(product.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'" class="text-danger">Giá khuyến mãi</span>
+                                <span th:if="${product.discountPrice}" class="text-decoration-line-through text-muted ms-2" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá gốc</span>
+                                <span th:unless="${product.discountPrice}" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                            </h4>
+                        </div>
+
+                        <div class="mb-3">
+                            <p><strong>Mã sản phẩm:</strong> <span th:text="${product.sku}">SKU</span></p>
+                            <p><strong>Số lượng còn:</strong> <span th:text="${product.quantityInStock}">Số lượng</span></p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Mô tả sản phẩm</h5>
+                            <p th:text="${product.description}">Mô tả sản phẩm</p>
+                        </div>
+
+                        <!-- Form thêm vào giỏ hàng -->
+                        <form sec:authorize="hasRole('CUSTOMER')" th:if="${product.quantityInStock > 0}" th:action="@{/cart/add/product/{id}(id=${product.id})}" method="post">
+                            <div class="row g-3 align-items-center mb-3">
+                                <div class="col-auto">
+                                    <label for="quantity" class="col-form-label">Số lượng:</label>
+                                </div>
+                                <div class="col-3">
+                                    <input type="number" id="quantity" name="quantity" class="form-control" min="1" th:max="${product.quantityInStock}" value="1">
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-primary">Thêm vào giỏ</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Thông báo khi hết hàng -->
+                        <div class="alert alert-warning" th:if="${product.quantityInStock <= 0}">
+                            Sản phẩm tạm hết hàng
+                        </div>
+
+                        <!-- Thông báo đăng nhập -->
+                        <div class="alert alert-info" sec:authorize="!isAuthenticated()">
+                            <a th:href="@{/login}">Đăng nhập</a> để mua hàng
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products Section -->
+        <div class="related-products mt-5">
+            <h3 class="mb-4">Sản phẩm liên quan</h3>
+            <div class="row">
+                <div class="col-md-3 mb-4" th:each="relatedProduct : ${relatedProducts}">
+                    <div class="card h-100">
+                        <img th:if="${relatedProduct.imageUrl}" th:src="${relatedProduct.imageUrl}" class="card-img-top" alt="Product Image">
+                        <img th:unless="${relatedProduct.imageUrl}" src="/images/no-image.jpg" class="card-img-top" alt="No Image">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${relatedProduct.name}">Tên sản phẩm</h5>
+                            <p class="card-text">
+                                <span th:if="${relatedProduct.discountPrice}" th:text="${#numbers.formatDecimal(relatedProduct.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá khuyến mãi</span>
+                                <span th:if="${relatedProduct.discountPrice}" class="text-decoration-line-through text-muted ms-2" th:text="${#numbers.formatDecimal(relatedProduct.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá gốc</span>
+                                <span th:unless="${relatedProduct.discountPrice}" th:text="${#numbers.formatDecimal(relatedProduct.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                            </p>
+                            <a th:href="@{/products/{id}(id=${relatedProduct.id})}" class="btn btn-outline-primary">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

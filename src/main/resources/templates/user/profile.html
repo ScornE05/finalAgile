@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thông tin tài khoản')}">
+    <title>Thông tin tài khoản</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Profile Section -->
+<section class="profile-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Thông tin tài khoản</h2>
+
+        <!-- Thông báo thành công -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <span th:text="${success}">Thành công</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar menu -->
+            <div class="col-md-3 mb-4">
+                <div class="list-group">
+                    <a th:href="@{/profile}" class="list-group-item list-group-item-action active">Thông tin cá nhân</a>
+                    <a th:href="@{/orders}" class="list-group-item list-group-item-action">Đơn hàng của tôi</a>
+                    <a th:href="@{/profile/edit}" class="list-group-item list-group-item-action">Cập nhật thông tin</a>
+                    <a th:href="@{/profile/change-password}" class="list-group-item list-group-item-action">Đổi mật khẩu</a>
+                </div>
+            </div>
+
+            <!-- Profile information -->
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Thông tin cá nhân</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Tên đăng nhập:</div>
+                            <div class="col-md-9" th:text="${user.username}">username</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Họ và tên:</div>
+                            <div class="col-md-9" th:text="${user.fullName}">Nguyễn Văn A</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Email:</div>
+                            <div class="col-md-9" th:text="${user.email}">example@email.com</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Số điện thoại:</div>
+                            <div class="col-md-9" th:text="${user.phone != null ? user.phone : 'Chưa cập nhật'}">0123456789</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Địa chỉ:</div>
+                            <div class="col-md-9" th:text="${user.address != null ? user.address : 'Chưa cập nhật'}">123 Nguyễn Trãi, Thanh Xuân, Hà Nội</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Ngày tham gia:</div>
+                            <div class="col-md-9" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">01/01/2023</div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a th:href="@{/profile/edit}" class="btn btn-primary">Cập nhật thông tin</a>
+                            <a th:href="@{/profile/change-password}" class="btn btn-outline-secondary">Đổi mật khẩu</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

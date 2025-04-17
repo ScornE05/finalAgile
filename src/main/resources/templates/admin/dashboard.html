@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Trang quản trị')}">
+    <title>Trang quản trị</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Admin Dashboard Section -->
+<section class="admin-dashboard-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Trang quản trị</h2>
+        </div>
+
+        <!-- Admin navigation -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link active" th:href="@{/admin}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/products}">Sản phẩm</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/categories}">Danh mục</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/pets}">Thú cưng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/orders}">Đơn hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/users}">Người dùng</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard cards -->
+        <div class="row">
+            <!-- Đơn hàng chờ xử lý -->
+            <div class="col-md-3 mb-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Đơn hàng chờ xử lý</h5>
+                        <p class="card-text display-4" th:text="${pendingOrders}">0</p>
+                        <a th:href="@{/admin/orders/pending}" class="btn btn-outline-light">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doanh thu tháng hiện tại -->
+            <div class="col-md-3 mb-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Doanh thu tháng hiện tại</h5>
+                        <p class="card-text display-4" th:text="${#numbers.formatDecimal(monthlyRevenue, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</p>
+                        <a th:href="@{/admin/orders/delivered}" class="btn btn-outline-light">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tổng số sản phẩm -->
+            <div class="col-md-3 mb-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Tổng số sản phẩm</h5>
+                        <p class="card-text display-4" th:text="${productCount != null ? productCount : 0}">0</p>
+                        <a th:href="@{/admin/products}" class="btn btn-outline-light">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tổng số khách hàng -->
+            <div class="col-md-3 mb-4">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Tổng số khách hàng</h5>
+                        <p class="card-text display-4" th:text="${customerCount != null ? customerCount : 0}">0</p>
+                        <a th:href="@{/admin/users/customers}" class="btn btn-outline-light">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Đơn hàng gần đây</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Mã đơn hàng</th>
+                                    <th scope="col">Khách hàng</th>
+                                    <th scope="col">Ngày đặt</th>
+                                    <th scope="col">Tổng tiền</th>
+                                    <th scope="col">Trạng thái</th>
+                                    <th scope="col">Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="order : ${recentOrders}" th:if="${not #lists.isEmpty(recentOrders)}">
+                                    <td th:text="${'#' + order.id}">123456</td>
+                                    <td th:text="${order.user.fullName}">Nguyễn Văn A</td>
+                                    <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
+                                    <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</td>
+                                    <td>
+                                        <span class="badge bg-secondary" th:if="${order.status == 'PENDING'}">Chờ xử lý</span>
+                                        <span class="badge bg-info" th:if="${order.status == 'PROCESSING'}">Đang xử lý</span>
+                                        <span class="badge bg-primary" th:if="${order.status == 'SHIPPED'}">Đang giao</span>
+                                        <span class="badge bg-success" th:if="${order.status == 'DELIVERED'}">Đã giao</span>
+                                        <span class="badge bg-danger" th:if="${order.status == 'CANCELLED'}">Đã hủy</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="btn btn-sm btn-primary">Chi tiết</a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(recentOrders)}">
+                                    <td colspan="6" class="text-center">Không có đơn hàng nào gần đây.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end mt-3">
+                            <a th:href="@{/admin/orders}" class="btn btn-outline-primary">Xem tất cả đơn hàng</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

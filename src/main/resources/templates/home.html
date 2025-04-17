@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Trang chủ')}">
+    <title>Trang chủ</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Banner Section -->
+<section class="banner-section">
+    <div class="container mt-3">
+        <div class="jumbotron">
+            <h1>Chào mừng đến với PetShop</h1>
+            <p>Nơi cung cấp các sản phẩm chất lượng cho thú cưng của bạn</p>
+            <a th:href="@{/products}" class="btn btn-primary">Xem sản phẩm</a>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Danh mục sản phẩm</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4" th:each="category : ${parentCategories}">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${category.name}">Tên danh mục</h5>
+                        <p class="card-text" th:text="${category.description}">Mô tả danh mục</p>
+                        <a th:href="@{/products/category/{id}(id=${category.id})}" class="btn btn-outline-primary">Xem sản phẩm</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="featured-products-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Sản phẩm nổi bật</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4" th:each="product : ${featuredProducts}">
+                <div class="card">
+                    <img th:if="${product.imageUrl}" th:src="${product.imageUrl}" class="card-img-top" alt="Product Image">
+                    <img th:unless="${product.imageUrl}" src="/images/no-image.jpg" class="card-img-top" alt="No Image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}">Tên sản phẩm</h5>
+                        <p class="card-text">
+                            <span th:if="${product.discountPrice}" th:text="${#numbers.formatDecimal(product.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá khuyến mãi</span>
+                            <span th:if="${product.discountPrice}" class="text-decoration-line-through text-muted ms-2" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá gốc</span>
+                            <span th:unless="${product.discountPrice}" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                        </p>
+                        <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-primary">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a th:href="@{/products}" class="btn btn-outline-primary">Xem tất cả sản phẩm</a>
+        </div>
+    </div>
+</section>
+
+<!-- Available Pets Section -->
+<section class="available-pets-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Thú cưng có sẵn</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4" th:each="pet : ${availablePets}">
+                <div class="card">
+                    <img th:if="${pet.imageUrl}" th:src="${pet.imageUrl}" class="card-img-top" alt="Pet Image">
+                    <img th:unless="${pet.imageUrl}" src="/images/no-image.jpg" class="card-img-top" alt="No Image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${pet.name}">Tên thú cưng</h5>
+                        <p class="card-text">
+                            <span th:text="${pet.species}">Loài</span>
+                            <span th:if="${pet.breed}" th:text="' - ' + ${pet.breed}">Giống</span>
+                        </p>
+                        <p class="card-text" th:text="${#numbers.formatDecimal(pet.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</p>
+                        <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-primary">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a th:href="@{/pets}" class="btn btn-outline-primary">Xem tất cả thú cưng</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

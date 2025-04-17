@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Chi tiết thú cưng')}">
+    <title>Chi tiết thú cưng</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Pet Detail Section -->
+<section class="pet-detail-section py-5">
+    <div class="container">
+        <!-- Thông báo -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <span th:text="${success}">Thành công</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <!-- Ảnh thú cưng -->
+                    <div class="col-md-5">
+                        <img th:if="${pet.imageUrl}" th:src="${pet.imageUrl}" class="img-fluid" alt="Pet Image">
+                        <img th:unless="${pet.imageUrl}" src="/images/no-image.jpg" class="img-fluid" alt="No Image">
+
+                        <!-- Ảnh phụ -->
+                        <div class="row mt-3" th:if="${not #lists.isEmpty(pet.images)}">
+                            <div class="col-3 mb-3" th:each="image : ${pet.images}">
+                                <img th:src="${image.imageUrl}" class="img-thumbnail" alt="Pet Image">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin thú cưng -->
+                    <div class="col-md-7">
+                        <h2 th:text="${pet.name}">Tên thú cưng</h2>
+                        <p>
+                            <span class="badge bg-info" th:text="${pet.species}">Loài</span>
+                            <span class="badge bg-success" th:if="${pet.status == 'AVAILABLE'}">Có sẵn</span>
+                            <span class="badge bg-warning" th:if="${pet.status == 'RESERVED'}">Đã đặt</span>
+                            <span class="badge bg-danger" th:if="${pet.status == 'SOLD'}">Đã bán</span>
+                        </p>
+
+                        <div class="mb-3">
+                            <h4 th:text="${#numbers.formatDecimal(pet.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</h4>
+                        </div>
+
+                        <div class="mb-3">
+                            <p><strong>Giống:</strong> <span th:text="${pet.breed}">Giống</span></p>
+                            <p><strong>Tuổi:</strong> <span th:text="${pet.age}">2</span> tháng</p>
+                            <p><strong>Giới tính:</strong> <span th:text="${pet.gender == 'MALE' ? 'Đực' : 'Cái'}">Đực</span></p>
+                            <p th:if="${pet.color}"><strong>Màu sắc:</strong> <span th:text="${pet.color}">Màu sắc</span></p>
+                            <p th:if="${pet.weight}"><strong>Cân nặng:</strong> <span th:text="${pet.weight}">3.5</span> kg</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Mô tả</h5>
+                            <p th:text="${pet.description}">Mô tả thú cưng</p>
+                        </div>
+
+                        <!-- Form thêm vào giỏ hàng -->
+                        <form sec:authorize="hasRole('CUSTOMER')" th:if="${pet.status == 'AVAILABLE'}" th:action="@{/cart/add/pet/{id}(id=${pet.id})}" method="post">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Thêm vào giỏ hàng</button>
+                            </div>
+                        </form>
+
+                        <!-- Thông báo khi đã đặt hoặc đã bán -->
+                        <div class="alert alert-warning" th:if="${pet.status == 'RESERVED'}">
+                            Thú cưng này đã được đặt
+                        </div>
+                        <div class="alert alert-danger" th:if="${pet.status == 'SOLD'}">
+                            Thú cưng này đã được bán
+                        </div>
+
+                        <!-- Thông báo đăng nhập -->
+                        <div class="alert alert-info" sec:authorize="!isAuthenticated()">
+                            <a th:href="@{/login}">Đăng nhập</a> để đặt mua thú cưng
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Pets Section -->
+        <div class="related-pets mt-5">
+            <h3 class="mb-4">Thú cưng tương tự</h3>
+            <div class="row">
+                <div class="col-md-3 mb-4" th:each="relatedPet : ${relatedPets}">
+                    <div class="card h-100">
+                        <img th:if="${relatedPet.imageUrl}" th:src="${relatedPet.imageUrl}" class="card-img-top" alt="Pet Image">
+                        <img th:unless="${relatedPet.imageUrl}" src="/images/no-image.jpg" class="card-img-top" alt="No Image">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${relatedPet.name}">Tên thú cưng</h5>
+                            <p class="card-text">
+                                <span th:text="${relatedPet.species}">Loài</span>
+                                <span th:if="${relatedPet.breed}" th:text="' - ' + ${relatedPet.breed}">Giống</span>
+                            </p>
+                            <p class="card-text" th:text="${#numbers.formatDecimal(relatedPet.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a th:href="@{/pets/{id}(id=${relatedPet.id})}" class="btn btn-outline-primary">Xem chi tiết</a>
+                                <span class="badge bg-success" th:if="${relatedPet.status == 'AVAILABLE'}">Có sẵn</span>
+                                <span class="badge bg-warning" th:if="${relatedPet.status == 'RESERVED'}">Đã đặt</span>
+                                <span class="badge bg-danger" th:if="${relatedPet.status == 'SOLD'}">Đã bán</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Đơn hàng của tôi')}">
+    <title>Đơn hàng của tôi</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Orders Section -->
+<section class="orders-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Đơn hàng của tôi</h2>
+
+        <!-- Thông báo thành công -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <span th:text="${success}">Thành công</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Không có đơn hàng -->
+        <div class="text-center py-5" th:if="${#lists.isEmpty(orders)}">
+            <h4>Bạn chưa có đơn hàng nào</h4>
+            <p>Hãy tiếp tục mua sắm để có đơn hàng đầu tiên.</p>
+            <a th:href="@{/products}" class="btn btn-primary mt-3">Mua sắm ngay</a>
+        </div>
+
+        <!-- Danh sách đơn hàng -->
+        <div th:if="${not #lists.isEmpty(orders)}">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Mã đơn hàng</th>
+                        <th scope="col">Ngày đặt</th>
+                        <th scope="col">Tổng tiền</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Thanh toán</th>
+                        <th scope="col">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${'#' + order.id}">123456</td>
+                        <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2023</td>
+                        <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</td>
+                        <td>
+                            <span class="badge bg-secondary" th:if="${order.status == 'PENDING'}">Chờ xử lý</span>
+                            <span class="badge bg-info" th:if="${order.status == 'PROCESSING'}">Đang xử lý</span>
+                            <span class="badge bg-primary" th:if="${order.status == 'SHIPPED'}">Đang giao</span>
+                            <span class="badge bg-success" th:if="${order.status == 'DELIVERED'}">Đã giao</span>
+                            <span class="badge bg-danger" th:if="${order.status == 'CANCELLED'}">Đã hủy</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning" th:if="${order.paymentStatus == 'PENDING'}">Chưa thanh toán</span>
+                            <span class="badge bg-success" th:if="${order.paymentStatus == 'PAID'}">Đã thanh toán</span>
+                            <span class="badge bg-info" th:if="${order.paymentStatus == 'REFUNDED'}">Đã hoàn tiền</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-sm btn-primary">Chi tiết</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Phân trang -->
+            <div class="row mt-4" th:if="${totalPages > 0}">
+                <div class="col-12">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/orders(page=0, size=${size})}" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/orders(page=${currentPage - 1}, size=${size})}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/orders(page=${i}, size=${size})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/orders(page=${currentPage + 1}, size=${size})}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/orders(page=${totalPages - 1}, size=${size})}" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

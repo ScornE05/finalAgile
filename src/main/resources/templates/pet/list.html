@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thú cưng')}">
+    <title>Thú cưng</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Pets Section -->
+<section class="pets-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Thú cưng</h2>
+
+        <!-- Filter Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form th:action="@{/pets}" method="get" class="row g-3">
+                            <!-- Loài -->
+                            <div class="col-md-3">
+                                <label for="species" class="form-label">Loài</label>
+                                <select class="form-select" id="species" name="species">
+                                    <option value="">Tất cả loài</option>
+                                    <option value="Chó" th:selected="${species == 'Chó'}">Chó</option>
+                                    <option value="Mèo" th:selected="${species == 'Mèo'}">Mèo</option>
+                                    <option value="Cá" th:selected="${species == 'Cá'}">Cá</option>
+                                    <option value="Chim" th:selected="${species == 'Chim'}">Chim</option>
+                                    <option value="Khác" th:selected="${species == 'Khác'}">Khác</option>
+                                </select>
+                            </div>
+
+                            <!-- Giá từ -->
+                            <div class="col-md-2">
+                                <label for="minPrice" class="form-label">Giá từ</label>
+                                <input type="number" class="form-control" id="minPrice" name="minPrice"
+                                       th:value="${minPrice}" placeholder="0">
+                            </div>
+
+                            <!-- Giá đến -->
+                            <div class="col-md-2">
+                                <label for="maxPrice" class="form-label">Giá đến</label>
+                                <input type="number" class="form-control" id="maxPrice" name="maxPrice"
+                                       th:value="${maxPrice}" placeholder="10000000">
+                            </div>
+
+                            <!-- Tìm kiếm -->
+                            <div class="col-md-3">
+                                <label for="keyword" class="form-label">Tìm kiếm</label>
+                                <input type="text" class="form-control" id="keyword" name="keyword"
+                                       th:value="${keyword}" placeholder="Nhập từ khóa...">
+                            </div>
+
+                            <!-- Nút lọc -->
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pets List -->
+        <div class="row">
+            <div class="col-md-3 mb-4" th:each="pet : ${pets}">
+                <div class="card h-100">
+                    <img th:if="${pet.imageUrl}" th:src="${pet.imageUrl}" class="card-img-top" alt="Pet Image">
+                    <img th:unless="${pet.imageUrl}" src="/images/no-image.jpg" class="card-img-top" alt="No Image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${pet.name}">Tên thú cưng</h5>
+                        <p class="card-text">
+                            <span th:text="${pet.species}">Loài</span>
+                            <span th:if="${pet.breed}" th:text="' - ' + ${pet.breed}">Giống</span>
+                        </p>
+                        <p class="card-text">
+                            <span th:text="${#numbers.formatDecimal(pet.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-primary">Xem chi tiết</a>
+                            <span class="badge bg-success" th:if="${pet.status == 'AVAILABLE'}">Có sẵn</span>
+                            <span class="badge bg-warning" th:if="${pet.status == 'RESERVED'}">Đã đặt</span>
+                            <span class="badge bg-danger" th:if="${pet.status == 'SOLD'}">Đã bán</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hiển thị thông báo khi không có thú cưng -->
+            <div class="col-12 text-center" th:if="${#lists.isEmpty(pets)}">
+                <p>Không tìm thấy thú cưng nào.</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-4" th:if="${totalPages > 0}">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/pets(page=0, size=${size}, species=${species}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/pets(page=${currentPage - 1}, size=${size}, species=${species}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/pets(page=${i}, size=${size}, species=${species}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/pets(page=${currentPage + 1}, size=${size}, species=${species}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/pets(page=${totalPages - 1}, size=${size}, species=${species}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sản phẩm')}">
+    <title>Sản phẩm</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<!-- Products Section -->
+<section class="products-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Sản phẩm</h2>
+
+        <!-- Filter Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form th:action="@{/products}" method="get" class="row g-3">
+                            <!-- Danh mục -->
+                            <div class="col-md-3">
+                                <label for="categoryId" class="form-label">Danh mục</label>
+                                <select class="form-select" id="categoryId" name="categoryId">
+                                    <option value="">Tất cả danh mục</option>
+                                    <option th:each="category : ${categories}"
+                                            th:value="${category.id}"
+                                            th:text="${category.name}"
+                                            th:selected="${category.id == categoryId}">
+                                        Tên danh mục
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Giá từ -->
+                            <div class="col-md-2">
+                                <label for="minPrice" class="form-label">Giá từ</label>
+                                <input type="number" class="form-control" id="minPrice" name="minPrice"
+                                       th:value="${minPrice}" placeholder="0">
+                            </div>
+
+                            <!-- Giá đến -->
+                            <div class="col-md-2">
+                                <label for="maxPrice" class="form-label">Giá đến</label>
+                                <input type="number" class="form-control" id="maxPrice" name="maxPrice"
+                                       th:value="${maxPrice}" placeholder="1000000">
+                            </div>
+
+                            <!-- Tìm kiếm -->
+                            <div class="col-md-3">
+                                <label for="keyword" class="form-label">Tìm kiếm</label>
+                                <input type="text" class="form-control" id="keyword" name="keyword"
+                                       th:value="${keyword}" placeholder="Nhập từ khóa...">
+                            </div>
+
+                            <!-- Nút lọc -->
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products List -->
+        <div class="row">
+            <div class="col-md-3 mb-4" th:each="product : ${products}">
+                <div class="card h-100">
+                    <img th:if="${product.imageUrl}" th:src="${product.imageUrl}" class="card-img-top" alt="Product Image">
+                    <img th:unless="${product.imageUrl}" src="/images/no-image.jpg" class="card-img-top" alt="No Image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}">Tên sản phẩm</h5>
+                        <p class="card-text">
+                            <span th:if="${product.discountPrice}" th:text="${#numbers.formatDecimal(product.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá khuyến mãi</span>
+                            <span th:if="${product.discountPrice}" class="text-decoration-line-through text-muted ms-2" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá gốc</span>
+                            <span th:unless="${product.discountPrice}" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Giá</span>
+                        </p>
+                        <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-primary">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hiển thị thông báo khi không có sản phẩm -->
+            <div class="col-12 text-center" th:if="${#lists.isEmpty(products)}">
+                <p>Không tìm thấy sản phẩm nào.</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-4" th:if="${totalPages > 0}">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/products(page=0, size=${size}, categoryId=${categoryId}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/products(page=${currentPage - 1}, size=${size}, categoryId=${categoryId}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/products(page=${i}, size=${size}, categoryId=${categoryId}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/products(page=${currentPage + 1}, size=${size}, categoryId=${categoryId}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/products(page=${totalPages - 1}, size=${size}, categoryId=${categoryId}, minPrice=${minPrice}, maxPrice=${maxPrice}, keyword=${keyword}, sortBy=${sortBy}, sortDir=${sortDir})}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
