@@ -51,7 +51,7 @@ public class UserController {
         // Đặt role mặc định là CUSTOMER
         user.setRole("CUSTOMER");
 
-        // Lưu user
+        // Lưu user (không cần mã hóa mật khẩu vì đã cấu hình trong UserServiceImpl)
         userService.save(user);
 
         return "redirect:/login?registered";
@@ -146,5 +146,4 @@ public class UserController {
 
         return "redirect:/profile";
     }
-
 }

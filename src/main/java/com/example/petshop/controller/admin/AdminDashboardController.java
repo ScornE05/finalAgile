@@ -18,7 +18,7 @@ import com.example.petshop.service.ProductService;
 import com.example.petshop.service.UserService;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/dashboard")
 public class AdminDashboardController {
 
     @Autowired

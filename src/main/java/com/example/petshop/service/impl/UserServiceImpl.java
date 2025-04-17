@@ -52,10 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User user) {
-        // Encode password before saving
-        if (user.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
+        // Không mã hóa mật khẩu, lưu trực tiếp
         return userRepository.save(user);
     }
 
@@ -63,11 +60,8 @@ public class UserServiceImpl implements UserService {
     public User update(User user) {
         User existingUser = findById(user.getId());
 
-        // Only encode password if it has changed (not null and not already encoded)
-        if (user.getPassword() != null && !user.getPassword().equals(existingUser.getPassword())) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        } else {
-            // Retain the existing encoded password
+        // Giữ nguyên mật khẩu hiện tại nếu không có sự thay đổi
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user.setPassword(existingUser.getPassword());
         }
 
@@ -91,19 +85,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<User> findByRole(String role, Pageable pageable) {
-        // This would require adding a custom query in UserRepository
-        // For simplicity, we can use findAll() and filter in memory
+        // Lọc người dùng theo vai trò
         return (Page<User>) userRepository.findAll(pageable)
                 .filter(user -> user.getRole().equals(role));
     }
 
     @Override
     public boolean isValidPassword(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
+        return rawPassword.equals(encodedPassword);
     }
 
     @Override
     public String encodePassword(String password) {
-        return passwordEncoder.encode(password);
+        return password;
     }
 }
